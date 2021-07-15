@@ -11,7 +11,7 @@ const CharacterList = () => {
 
   useEffect(() => {
     refresh();
-  }, []);
+  }, [refresh]);
 
   function refresh() {
     axios
