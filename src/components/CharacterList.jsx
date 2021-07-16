@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Characters from "./Characters";
 import Filter from "./Filter";
 import axios from "axios";
@@ -7,13 +7,9 @@ import { Link } from "react-router-dom";
 const CharacterList = () => {
   const [characters, setCharacters] = useState([]);
   const [searchPhrase, setSearchPhrase] = useState("");
-  const [page, setPage] = useState(34);
+  const [page, setPage] = useState(1);
 
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
-
-  function refresh() {
+  const refresh = useCallback(() => {
     axios
       //.get(`https://rickandmortyapi.com/api/character?page=${page}`)
 
@@ -29,7 +25,11 @@ const CharacterList = () => {
       .catch((err) => {
         console.error(err);
       });
-  }
+  }, [page]);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   // handleValue = (searchVal) => {
   //   setCharacters(searchVal);
@@ -52,7 +52,7 @@ const CharacterList = () => {
           characters
             .filter((value) => value.name.toLowerCase().includes(searchPhrase))
             .map((character) => (
-              <Link to={`/characters/${character.id}`}>
+              <Link to={`/characters/${character.id}`} key={character.id}>
                 <Characters
                   id={character.id}
                   name={character.name}
@@ -65,24 +65,21 @@ const CharacterList = () => {
       <div className="flex flex-row text-white font-mono m4 place-content-center">
         <button
           className="mr-32"
-          onClick={() => {
+          onClick={(e) => {
+            // console.log(e, "Previous");
             if (page > 1) {
-              setPage(page - 1);
-              console.log(page);
-              refresh();
+              setPage((old) => old - 1);
             }
           }}
         >
           Previous
         </button>
-
+         Page: {page}
         <button
           className="ml-32"
           onClick={() => {
             if (page < 34) {
-              setPage(page + 1);
-              console.log(page);
-              refresh();
+              setPage((old) => old + 1);
             }
           }}
         >
